@@ -40,3 +40,8 @@ if __name__ == "__main__":
             print(f"{num1} / {num2} = {result}")
         else:
             print("Invalid choice. Please select 1-5.")
+
+def calculate_velocity(distance: float, time: float) -> float:
+    if time <= 0:
+        raise ValueError("Time must be greater than zero")
+    return distance / time
