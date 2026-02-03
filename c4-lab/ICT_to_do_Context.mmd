@@ -1,0 +1,54 @@
+%% %% ICT_to_do_Context.mmd
+%% %% C4 Context diagram for ICT To Do List
+
+%% ```mermaid
+%% C4Context
+
+%% title ICT To Do List - System Context
+
+%% Person(student, "Student", "Manages task list, views assignments, track submission status")
+%% Person(instructor, "Instructor", "Views teaching-related tasks and monitor assignment deadlines; does not see student private tasks")
+%% Person(admin, "System Administrator", "Manages system configuration, supports user accounts, and monitors sync health")
+
+%% System(system, "ICT To Do List", "Task management system for the ICT e-learning environment; stores tasks and syncs assignments from MyCourses")
+%% System_Ext(mycourses, "MyCourses", "External e-learning system that owns course, assignment, and submission data (JSON over HTTPS)")
+
+%% Rel(student, system, "Uses via Web App or Mobile App", "HTTPS / JSON")
+%% Rel(instructor, system, "Uses via Web App (Instructor view)", "HTTPS / JSON")
+%% Rel(admin, system, "Uses Admin interface for monitoring and configuration", "HTTPS / JSON")
+%% Rel(system, mycourses, "Retrieves courses, assignments and submission status; treats MyCourses as source of truth", "HTTPS / JSON")
+
+C4Container
+title ICT To Do List - System Context
+
+Person(student, "Student", "Manages personal tasks and tracks course work")
+Person(instructor, "Instructor", "Views teaching tasks and monitors assignment deadlines")
+Person(admin, "System Administrator", "Manages configuration, users, and sync health")
+
+System_Ext(mycourses, "MyCourses", "External e-learning system\nProvides courses, assignments, submissions")
+
+System_Boundary(system, "ICT To Do List") {
+
+    Container(webapp, "Web App", "React", "Browser-based SPA for task management")
+    Container(mobileapp, "Mobile App", "Flutter", "Cross-platform mobile app for iOS and Android")
+
+    Container(api, "Web API", "Python FastAPI", "REST API serving JSON over HTTPS")
+
+    ContainerDb(db, "Database", "PostgreSQL", "Stores user profiles, tasks, sync data")
+
+    Container(connector, "MyCourses Connector", "Python", "Integration module for MyCourses API")
+}
+
+Rel(student, webapp, "Uses", "HTTPS")
+Rel(student, mobileapp, "Uses", "HTTPS")
+
+Rel(instructor, webapp, "Uses (Instructor view)", "HTTPS")
+Rel(admin, webapp, "Uses Admin interface", "HTTPS")
+
+Rel(webapp, api, "Makes API calls", "JSON / HTTPS")
+Rel(mobileapp, api, "Makes API calls", "JSON / HTTPS")
+
+Rel(api, db, "Reads/Writes", "SQL")
+Rel(api, connector, "Triggers sync", "Internal call")
+
+Rel(connector, mycourses, "Retrieves courses, assignments, submission status", "JSON / HTTPS")
